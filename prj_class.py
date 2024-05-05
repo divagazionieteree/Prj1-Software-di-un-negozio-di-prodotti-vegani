@@ -1,59 +1,83 @@
+import json
+from datetime import datetime
+
 class CommandsCRM:
     
-    def __init__(self, product_name: str, quantity: int, purchase_price: float, selling_price: float, wharehouse_dict: list):
-    
-        """
-        __init__ Function
-        """
-        self.product_name = product_name
-        self.quantity = quantity
-        self.purchase_price = purchase_price
-        self.selling_price = selling_price
-        self.wharehouse_dict = wharehouse_dict
-         
-    def aggiungi(self):
+    def aggiungi(product_name, quantity, purchase_price, selling_price, wharehouse_dict):
         
         """
         aggiungi un prodotto al magazzino
         """
-        product_dict = {"product_name": self.product_name, "quantity": self.quantity, "purchase_prize": self.purchase_price, "sale_prize": self.selling_price}        
-        self.wharehouse_dict.append(product_dict)
-        
-        return print(self.wharehouse_dict)
+        product_dict = {"product_name": product_name, "quantity": quantity, "purchase_prize": purchase_price, "sale_prize": selling_price}        
+        wharehouse_dict.append(product_dict)
     
-    def elenca(self): 
+        print(f"AGGIUNTO {quantity} X {product_name}")
+    
+    def elenca(wharehouse_dict): 
         """
         elenca i prodotto in magazzino
         """
-        return print("Hello World")
+        for item in wharehouse_dict:
+            print(item)
     
-    def vendita(self): 
+    
+    def vendita(product_name, quantity, sales_dict, wharehouse_dict): 
         """
         registra una vendita effettuata
         """
-        return print("Hello World")
     
-    def profitti(self): 
+        is_product = 0
+    
+        for i, val in enumerate(wharehouse_dict):
+            if wharehouse_dict[i]["product_name"] == product_name:
+                is_product +=1
+                prod_index = i
+    
+        if is_product > 0:
+            if wharehouse_dict[i]["quantity"] >= quantity:
+                current_date = str(datetime.now())
+                cost = wharehouse_dict[prod_index]["purchase_prize"] * quantity
+                billing = wharehouse_dict[prod_index]["sale_prize"] * quantity
+                selling_dict = {"product_name": product_name, "quantity": quantity, "date": current_date, "cost": cost, "billing": billing }        
+                sales_dict.append(selling_dict)
+                wharehouse_dict[prod_index]["quantity"] -= quantity
+            else:
+               print("non ci sono abbastanza prodotti")
+        
+        else:
+            print("prodotto non presente")
+    
+    def profitti(sales_dict): 
         """
         mostra i profitti totali
         """
-        return print("Hello World")
+        total_cost = 0
+        total_billing = 0
     
-    def aiuto(self): 
+        for i, val in enumerate(sales_dict):
+            total_cost = total_cost + sales_dict[i]["cost"]
+            total_billing = total_billing + sales_dict[i]["billing"]
+    
+        total_margin = total_billing - total_cost
+        print(f"Il fatturato totale è: {total_billing}")
+        print(f"Il margine totale è: {total_margin}")
+    
+    def aiuto(): 
         """
         mostra i possibili comandi
         """
-        list_aiuto = ["I comandi disponibili sono i seguenti:",
-                      "aggiungi: aggiungi un prodotto al magazzino",
-                      "elenca: elenca i prodotto in magazzino",
-                      "vendita: registra una vendita effettuata",
-                      "profitti: mostra i profitti totali",
-                      "aiuto: mostra i possibili comandi",
-                      "chiudi: esci dal programma"]
-        return print(list_aiuto)
+        str_aiuto = " I comandi disponibili sono i seguenti: \n aggiungi: aggiungi un prodotto al magazzino \n elenca: elenca i prodotto in magazzino \n vendita: registra una vendita effettuata \n profitti: mostra i profitti totali \n aiuto: mostra i possibili comandi \n chiudi: esci dal programma"
+        print(str_aiuto)
     
-    def chiudi(self): 
+    def chiudi(wharehouse_json, sales_json, wharehouse_dict, sales_dict): 
         """
-        esci dal programma
+        esci dal programma e salva le variabili nei json
         """
-        return print("Hello World")
+    
+        with open(wharehouse_json, "w") as outfile:
+            json.dump(wharehouse_dict, outfile)
+        
+        with open(sales_json, "w") as outfile:
+            json.dump(sales_dict, outfile)
+    
+        return print("Grazie e Buona giornata")
